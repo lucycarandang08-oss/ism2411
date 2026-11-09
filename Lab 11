@@ -1,0 +1,93 @@
+# REFLECTION
+# 1. I use .get() when a key might be missing and I want a safe fallback, like
+# reading optional fields from messy or user-supplied data. I use bracket
+# notation when the key must exist, because a KeyError then tells me right away
+# that something is wrong. My rule of thumb: if a missing key is acceptable, use
+# .get() with a default; if it signals a bug, use brackets.
+#
+# 2. Building a summary dictionary with a loop reminds me of a PivotTable or
+# SUMIF in Excel, where values are grouped by a category and totaled. The Python
+# version is more useful for large datasets because it handles millions of rows
+# without freezing, is repeatable with one script run, and does not need
+# manual formulas or re-filtering every time the data changes.
+
+print("=== Exercise 1: One customer ===")
+customer = {
+    "name": "Alice",
+    "email": "alice@example.com",
+    "tier": "gold",
+    "ytd_spend": 1250.50,
+}
+print(customer["name"])
+print(customer["email"])
+print(customer["tier"])
+print(customer["ytd_spend"])
+print(customer)
+
+print("\n=== Exercise 2: Update and add ===")
+customer["phone"] = "555-123-4567"
+print(customer)
+customer["tier"] = "platinum"
+print(customer)
+del customer["email"]
+print(customer)
+
+print("\n=== Exercise 3: Safe lookup ===")
+print(customer.get("email", "no email on file"))
+try:
+    print(customer["email"])
+except KeyError as e:
+    print("KeyError raised for missing key:", e)
+
+print("\n=== Exercise 4: Iterate ===")
+for key, value in customer.items():
+    print(f"{key}: {value}")
+
+# Iterating without .items() loops over the keys only, so each pass gives just
+# the key string. With .items() each pass gives a (key, value) pair.
+for item in customer:
+    print(item)
+
+print("\n=== Exercise 5: Lookup table ===")
+tier_discounts = {"bronze": 0, "silver": .05, "gold": .10, "platinum": .15}
+tier = customer["tier"]
+rate = tier_discounts.get(tier, 0)
+price = 200
+final_price = price * (1 - rate)
+print(f"Tier: {tier}")
+print(f"Discount: {rate:.0%}")
+print(f"Final price: ${final_price:.2f}")
+
+print("\n=== Exercise 6: List of dicts ===")
+customers = [
+    {"name": "Alice", "tier": "platinum"},
+    {"name": "Bob", "tier": "silver"},
+    {"name": "Carla", "tier": "bronze"},
+]
+for c in customers:
+    discount = 300 * tier_discounts.get(c["tier"], 0)
+    print(f"{c['name']} | {c['tier']} | discount: ${discount:.2f}")
+
+print("\n=== Exercise 7: Nested catalog ===")
+catalog = {
+    "Widget A": {"price": 9.99, "stock": 150},
+    "Gadget C": {"price": 49.99, "stock": 8},
+}
+for product, info in catalog.items():
+    if info["stock"] < 20:
+        print(f"LOW STOCK: {product} (only {info['stock']} left)")
+
+print("\n=== Exercise 8: Sales by region ===")
+transactions = [
+    {"region": "West", "amount": 120.00},
+    {"region": "East", "amount": 80.50},
+    {"region": "West", "amount": 45.25},
+    {"region": "North", "amount": 200.00},
+    {"region": "East", "amount": 19.50},
+]
+summary = {}
+for t in transactions:
+    summary[t["region"]] = summary.get(t["region"], 0) + t["amount"]
+for region in sorted(summary):
+    print(f"{region}: ${summary[region]:.2f}")
+
